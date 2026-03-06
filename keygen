@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+"""
+keygen - Cryptographically secure key generator for Vigenere cipher.
+
+Usage: ./keygen <key_length> <keyfilename>
+
+Generates a random key of <key_length> bytes using the Python 'secrets'
+module (which draws from /dev/urandom on Linux/Mac), and writes the raw
+bytes to <keyfilename>.
+"""
+
+import sys
+import secrets
+
+
+def keygen(n: int, filename: str) -> None:
+    """Generate n cryptographically secure random bytes and write to filename."""
+    key = secrets.token_bytes(n)
+    with open(filename, 'wb') as f:
+        f.write(key)
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print(f"Usage: {sys.argv[0]} <key_length> <keyfilename>", file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        n = int(sys.argv[1])
+        if n <= 0:
+            raise ValueError("Key length must be a positive integer.")
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    keygen(n, sys.argv[2])

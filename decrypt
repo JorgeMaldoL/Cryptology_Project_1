@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+"""
+decrypt - Byte-wise Vigenere cipher decryption.
+
+Usage: ./decrypt <ciphertext_file> <keyfile>
+
+Reads the ciphertext file and key file as raw bytes, reverses the Vigenere
+cipher byte-by-byte, and writes the recovered plaintext to stdout.
+
+Decryption formula: p_i = (c_i - k[i mod n]) mod 256
+where n is the key length. This is the exact inverse of encryption.
+
+Example:
+    ./decrypt myfile.enc mykey > myfile_recovered.txt
+"""
+
+import sys
+
+
+def decrypt(ciphertext_file: str, key_file: str) -> None:
+    """Decrypt ciphertext_file with key_file and write plaintext to stdout."""
+    with open(ciphertext_file, 'rb') as f:
+        ciphertext = f.read()
+    with open(key_file, 'rb') as f:
+        key = f.read()
+
+    if len(key) == 0:
+        print("Error: key file is empty.", file=sys.stderr)
+        sys.exit(1)
+
+    n = len(key)
+    # Subtraction mod 256 is the inverse of addition mod 256
+    plaintext = bytes((c - key[i % n]) % 256 for i, c in enumerate(ciphertext))
+    sys.stdout.buffer.write(plaintext)
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print(f"Usage: {sys.argv[0]} <ciphertext_file> <keyfile>", file=sys.stderr)
+        sys.exit(1)
+
+    decrypt(sys.argv[1], sys.argv[2])

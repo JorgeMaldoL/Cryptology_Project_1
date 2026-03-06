@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+"""
+encrypt - Byte-wise Vigenere cipher encryption.
+
+Usage: ./encrypt <plaintext_file> <keyfile>
+
+Reads the plaintext file and key file as raw bytes, applies the Vigenere
+cipher byte-by-byte, and writes the ciphertext to stdout.
+
+Encryption formula: c_i = (p_i + k[i mod n]) mod 256
+where n is the key length.
+
+Example:
+    ./encrypt myfile.txt mykey > myfile.enc
+"""
+
+import sys
+
+
+def encrypt(plaintext_file: str, key_file: str) -> None:
+    """Encrypt plaintext_file with key_file and write ciphertext to stdout."""
+    with open(plaintext_file, 'rb') as f:
+        plaintext = f.read()
+    with open(key_file, 'rb') as f:
+        key = f.read()
+
+    if len(key) == 0:
+        print("Error: key file is empty.", file=sys.stderr)
+        sys.exit(1)
+
+    n = len(key)
+    ciphertext = bytes((p + key[i % n]) % 256 for i, p in enumerate(plaintext))
+    sys.stdout.buffer.write(ciphertext)
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 3:
+        print(f"Usage: {sys.argv[0]} <plaintext_file> <keyfile>", file=sys.stderr)
+        sys.exit(1)
+
+    encrypt(sys.argv[1], sys.argv[2])
