@@ -1,0 +1,10 @@
+# ignore generated and test files
+recovered_from_mystery.txt
+*.key
+*.ct
+*.rec
+sample.*
+test.*
+__pycache__/
+*.pyc
+.env
